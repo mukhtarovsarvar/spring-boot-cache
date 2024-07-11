@@ -1,14 +1,15 @@
 package com.example.config;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.cache.CacheManager;
-import org.ehcache.jsr107.EhcacheCachingProvider;
 
+import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.spi.CachingProvider;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 /**
  * @author 'Mukhtarov Sarvarbek' on 7/6/2024
@@ -16,16 +17,22 @@ import java.net.URISyntaxException;
  * @contact @sarvargo
  */
 @Configuration
+@EnableCaching
 public class CacheConfiguration {
 
     @Bean
-    public CacheManager cacheManager() throws URISyntaxException {
-        CachingProvider cachingProvider = Caching.getCachingProvider(EhcacheCachingProvider.class.getName());
-        javax.cache.CacheManager jCacheManager = cachingProvider.getCacheManager(
-                getClass().getResource("/ehcache.xml").toURI(),
+    public JCacheCacheManager cacheManager() throws URISyntaxException {
+        CachingProvider provider = Caching.getCachingProvider();
+        CacheManager cacheManager = provider.getCacheManager(
+                Objects
+                        .requireNonNull(
+                                getClass().getResource("/ehcache.xml")
+                        ).toURI(),
                 getClass().getClassLoader()
         );
-        return new JCacheCacheManager(jCacheManager);
+        return new JCacheCacheManager(cacheManager);
     }
+
+
 
 }
