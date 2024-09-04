@@ -29,6 +29,7 @@ public class GuestController {
     public ResponseEntity<String> helloWithCache(){
         return ResponseEntity.ok(guestService.helloWithCache());
     }
+
     @GetMapping("/hello")
     public ResponseEntity<String> helloWithOutCache(){
         return ResponseEntity.ok(guestService.helloWithOutCache());
