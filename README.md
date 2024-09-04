@@ -1,28 +1,47 @@
-# Spring Boot Cache Tutorials
+# Hibernate Second-Level Cache Statistics with Ehcache
 
-This repository contains examples and explanations based on the articles written by Mukhtarov Sarvarbek about using caching in Spring Boot applications. The tutorials cover basic caching mechanisms, configurations, and practical examples of applying cache to improve the performance of a Spring Boot application.
+This document provides statistics from a Spring Boot application using Hibernate as the ORM and Ehcache as the
+second-level cache provider. The statistics cover JDBC connection management, statement execution, and cache
+interactions.
 
-## Articles
+## Cache Configuration
 
-1. [Spring Boot Cache (Part 2)](https://medium.com/@mukhtarovsarvarbek/spring-boot-cache-2-part-e00e54e957b7)
-2. [Spring Boot Cache](https://medium.com/@mukhtarovsarvarbek/spring-boot-cache-5eb314c0ab68)
+- **Cache Provider:** Ehcache
+- **Cache Level:** Second-Level Cache (L2C)
+- **Database:** PostgresSQL
 
-## Overview
+## Log Analysis
 
-### Spring Boot Cache (Part 2)
+The following statistics were captured during the execution of the application.
 
-In this article, the author continues from the first part of the series and delves deeper into the advanced configurations and usages of caching in Spring Boot applications. The topics covered include:
+### First Request: Fetching Person by ID `2`
 
-- Setting up cache configurations
-- Using different cache providers
-- Managing cache eviction policies
-- Monitoring and troubleshooting cache usage
+- **Time:** 2024-09-04T15:10:35.531+05:00
+- **Query Executed:**
+  ```sql
+  select p1_0.id, p1_0.name from person p1_0 where p1_0.id=?
+  ```
+- Session Metrics:
+    - JDBC Connection Acquisition:
+        - 448,300 nanoseconds spent acquiring 1 JDBC connection
+    - JDBC Statement Preparation:
+        - 234,100 nanoseconds spent preparing 1 JDBC statement
+    - JDBC Statement Execution:
+        - 1,396,900 nanoseconds spent executing 1 JDBC statement
+    - Second-Level Cache (L2C):
+        - 7,418,300 nanoseconds spent performing 1 L2C put
+        - 570,000 nanoseconds spent performing 1 L2C miss
 
-### Spring Boot Cache
+### Second Request: Fetching Person by ID `2`
 
-This article provides a comprehensive introduction to caching in Spring Boot, covering the following topics:
+- Time: 2024-09-04T15:11:03.681+05:00
+- Session Metrics:
+    - JDBC Connection Acquisition:
+        - 314,700 nanoseconds spent acquiring 1 JDBC connection
+    - JDBC Statement Execution:
+        - No JDBC statements were prepared or executed
+    - Second-Level Cache (L2C):
+        - 348,900 nanoseconds spent performing 1 L2C hit
 
-- Introduction to caching and its benefits
-- Basic caching annotations in Spring Boot
-- Configuring cache managers and cache resolvers
-- Practical examples of caching in Spring Boot applications
+This `README.md` file summarizes the cache usage statistics based on the provided log entries. It highlights the
+efficiency of the second-level cache in reducing database load during subsequent requests.
